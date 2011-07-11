@@ -38,3 +38,5 @@ $string['cliunknowoption'] = 'Təyin olunmayan parametrlər:
   {$a}
 Zəhmət olmasa help parametrindən istifadə edin';
 $string['cliyesnoprompt'] = 'y (bəli) və n (xeyr) düyməsini basın';
+$string['environmentrequireinstall'] = 'quraşdırılıb işə salınmalıdır';
+$string['environmentrequireversion'] = '{$a->needed}  versiyası tövsiyyə olunur. Siz {$a->current} versiyasından istifadə edirsiniz.';
