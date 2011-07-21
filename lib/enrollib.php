@@ -1063,8 +1063,12 @@ abstract class enrol_plugin {
                     $ue->status   = $status;
                 }
                 $ue->modifierid   = $USER->id;
-                $ue->timemodified = time();
-                $DB->update_record('user_enrolments', $ue);
+				$ue->timemodified = time();
+				try {
+	                $DB->update_record('user_enrolments', $ue);
+				} catch (dml_write_exception $e) {
+					$result = false;
+				}
             }
         } else {
             $ue = new stdClass();
@@ -1076,12 +1080,17 @@ abstract class enrol_plugin {
             $ue->modifierid   = $USER->id;
             $ue->timecreated  = time();
             $ue->timemodified = $ue->timecreated;
-            $ue->id = $DB->insert_record('user_enrolments', $ue);
 
             $inserted = true;
+			try {
+	            $ue->id = $DB->insert_record('user_enrolments', $ue);
+			} catch (dml_write_exception $e) {
+				$result = false;
+				$inserted = false;
+			}
         }
 
-        if ($roleid) {
+        if ($roleid && $inserted) {
             if ($this->roles_protected()) {
                 role_assign($roleid, $userid, $context->id, 'enrol_'.$name, $instance->id);
             } else {
@@ -1105,7 +1114,9 @@ abstract class enrol_plugin {
                 unset($USER->enrol['tempguest'][$courseid]);
                 $USER->access = remove_temp_roles($context, $USER->access);
             }
-        }
+		}
+
+		return $result;
     }
 
     /**
