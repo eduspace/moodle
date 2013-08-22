@@ -297,6 +297,9 @@ class auth_plugin_db extends auth_plugin_base {
                         $updateuser->timemodified = time();
                         $DB->update_record('user', $updateuser);
                         $trace->output(get_string('auth_dbsuspenduser', 'auth_db', array('name'=>$user->username, 'id'=>$user->id)), 1);
+
+                        $euser = $DB->get_record('user', array('id' => $user->id));
+                        events_trigger('user_updated', $euser);
                     }
                 }
             }
@@ -403,6 +406,8 @@ class auth_plugin_db extends auth_plugin_base {
                 try {
                     $id = $DB->insert_record ('user', $user); // it is truly a new user
                     $trace->output(get_string('auth_dbinsertuser', 'auth_db', array('name'=>$user->username, 'id'=>$id)), 1);
+                    $euser = $DB->get_record('user', array('id' => $id));
+                    events_trigger('user_created', $euser);
                 } catch (moodle_exception $e) {
                     $trace->output(get_string('auth_dbinsertusererror', 'auth_db', $user->username), 1);
                     continue;
